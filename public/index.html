@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Controle de Ordens de Serviço</title>
+  <link rel="stylesheet" href="settings/style.css">
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const dateInputs = document.querySelectorAll('input[id^="filterData"], input[id$="finalizacao"], input[id="data"]');
+      dateInputs.forEach(input => {
+        input.addEventListener('input', (e) => {
+          let v = e.target.value.replace(/\D/g, '');
+          if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2);
+          if (v.length >= 5) v = v.slice(0, 5) + '/' + v.slice(5, 9);
+          e.target.value = v;
+        });
+      });
+    });
+  </script>
+
+</head>
+
+<body>
+  <header>
+    <img src="settings/Logo.png" alt="Logo" /> <br>
+    <h1>CONTROLE DE ORDENS DE SERVIÇO</h1>
+  </header>
+  <div class="container">
+    <div class="filter-section">
+      <div class="filter-grid">
+        <input type="text" id="filterData" placeholder="Filtrar por Data">
+        <input type="text" id="filterSetor" placeholder="Filtrar por Setor">
+        <input type="text" id="filterSolicitante" placeholder="Filtrar por Solicitante">
+        <input type="text" id="filterEquipamento" placeholder="Filtrar por Equipamento">
+        <input type="text" id="filterNome" placeholder="Filtrar por Nome">
+        <input type="text" id="filterTipo" placeholder="Filtrar por Tipo">
+        <input type="text" id="filterTempoPrevisto" placeholder="Filtrar por Tempo Previsto">
+        <input type="text" id="filterFinalizacao" placeholder="Filtrar por Finalização">
+      </div>
+      <div class="button-group">
+        <button onclick="applyFilters()">Filtrar</button>
+        <button onclick="clearFilters()">Limpar</button>
+      </div>
+    </div>
+
+    <div class="form-section">
+      <div class="form-grid">
+        <input type="text" id="data" placeholder="Data">
+        <input type="text" id="setor" placeholder="Setor">
+        <input type="text" id="solicitante" placeholder="Solicitante">
+        <input type="text" id="equipamento" placeholder="Equipamento">
+        <input type="text" id="motivo" placeholder="Motivo">
+        <input type="text" id="recebido" placeholder="Recebido por">
+        <input type="text" id="nome" placeholder="Nome do executor">
+        <select id="tipo">
+          <option value="">Tipo de Manutenção</option>
+          <option value="Corretiva">Corretiva</option>
+          <option value="Preventiva">Preventiva</option>
+          <option value="Melhoria">Melhoria</option>
+        </select>
+        <input type="text" id="descricao" placeholder="Descrição do serviço">
+        <input type="text" id="material" placeholder="Material utilizado">
+        <input type="text" id="mao" placeholder="Mão de obra">
+        <input type="text" id="tempoPrevisto" placeholder="Tempo previsto (h)">
+        <input type="text" id="tempoUtilizado" placeholder="Tempo utilizado (h)">
+        <input type="text" id="finalizacao" placeholder="Data final">
+        <input type="text" id="assinatura" placeholder="Assinatura">
+      </div>
+      <div class="button-group">
+        <button onclick="adicionarOrdem()">Salvar OS</button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table id="os-table">
+        <thead>
+          <tr>
+            <th>ID OS</th>
+            <th>Data</th>
+            <th>Setor</th>
+            <th>Solicitante</th>
+            <th>Equipamento</th>
+            <th>Motivo</th>
+            <th>Recebido</th>
+            <th>Nome</th>
+            <th>Tipo</th>
+            <th>Descrição</th>
+            <th>Material</th>
+            <th>Mão de Obra</th>
+            <th>Tempo Previsto</th>
+            <th>Tempo Utilizado</th>
+            <th>Finalização</th>
+            <th>Assinatura</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <button onclick="previousPage()">⬅ Anterior</button>
+      <span id="page-indicator"></span>
+      <button onclick="nextPage()">Próxima ➡</button>
+    </div>
+
+    <script defer src="settings/script.js"></script>
+
+</body>
+
+</html>
