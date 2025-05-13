@@ -125,4 +125,9 @@ function removerOrdem(id) {
         });
 }
 
+function fazerBackup() {
+  window.location.href = '/backup';
+}
+
+
 fetchData();

@@ -72,6 +72,14 @@ app.delete('/remover/:id', (req, res) => {
   res.json({ sucesso: true });
 });
 
+// Botão backup
+const path = require('path');
+app.get('/backup', (req, res) => {
+  const filePath = path.join(__dirname, 'database.xlsx');
+  res.download(filePath, 'backup-ordens-servico.xlsx');
+});
+
+
 app.listen(3000, () => {
   console.log('🚀 Servidor rodando em http://localhost:3000');
 });
