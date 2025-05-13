@@ -6,21 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Controle de Ordens de Serviço</title>
   <link rel="stylesheet" href="settings/style.css">
-
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      const dateInputs = document.querySelectorAll('input[id^="filterData"], input[id$="finalizacao"], input[id="data"]');
-      dateInputs.forEach(input => {
-        input.addEventListener('input', (e) => {
-          let v = e.target.value.replace(/\D/g, '');
-          if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2);
-          if (v.length >= 5) v = v.slice(0, 5) + '/' + v.slice(5, 9);
-          e.target.value = v;
-        });
+      const dateIds = ['data', 'finalizacao', 'filterData', 'filterFinalizacao'];
+      dateIds.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.placeholder = 'dd/mm/yyyy';
       });
     });
   </script>
-
 </head>
 
 <body>
@@ -28,17 +22,49 @@
     <img src="settings/Logo.png" alt="Logo" /> <br>
     <h1>CONTROLE DE ORDENS DE SERVIÇO</h1>
   </header>
+
   <div class="container">
+
+    <!-- Filtros -->
     <div class="filter-section">
-      <div class="filter-grid">
-        <input type="text" id="filterData" placeholder="Filtrar por Data">
-        <input type="text" id="filterSetor" placeholder="Filtrar por Setor">
-        <input type="text" id="filterSolicitante" placeholder="Filtrar por Solicitante">
-        <input type="text" id="filterEquipamento" placeholder="Filtrar por Equipamento">
-        <input type="text" id="filterNome" placeholder="Filtrar por Nome">
-        <input type="text" id="filterTipo" placeholder="Filtrar por Tipo">
-        <input type="text" id="filterTempoPrevisto" placeholder="Filtrar por Tempo Previsto">
-        <input type="text" id="filterFinalizacao" placeholder="Filtrar por Finalização">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="filterData">Filtrar por Data</label>
+          <input type="text" id="filterData" placeholder="dd/mm/yyyy">
+        </div>
+        <div class="form-group">
+          <label for="filterSetor">Filtrar por Setor</label>
+          <input type="text" id="filterSetor" placeholder="Filtrar por Setor">
+        </div>
+        <div class="form-group">
+          <label for="filterSolicitante">Filtrar por Solicitante</label>
+          <input type="text" id="filterSolicitante" placeholder="Filtrar por Solicitante">
+        </div>
+        <div class="form-group">
+          <label for="filterEquipamento">Filtrar por Equipamento</label>
+          <input type="text" id="filterEquipamento" placeholder="Filtrar por Equipamento">
+        </div>
+        <div class="form-group">
+          <label for="filterNome">Filtrar por Nome</label>
+          <input type="text" id="filterNome" placeholder="Filtrar por Nome">
+        </div>
+        <div class="form-group">
+          <label for="filterTipo">Filtrar por Tipo</label>
+          <select id="filterTipo">
+            <option value="">Todos</option>
+            <option value="Corretiva">Corretiva</option>
+            <option value="Preventiva">Preventiva</option>
+            <option value="Melhoria">Melhoria</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="filterTempoPrevisto">Filtrar por Tempo Previsto</label>
+          <input type="text" id="filterTempoPrevisto" placeholder="Filtrar por Tempo Previsto">
+        </div>
+        <div class="form-group">
+          <label for="filterFinalizacao">Filtrar por Finalização</label>
+          <input type="text" id="filterFinalizacao" placeholder="dd/mm/yyyy">
+        </div>
       </div>
       <div class="button-group">
         <button onclick="applyFilters()">Filtrar</button>
@@ -46,28 +72,74 @@
       </div>
     </div>
 
+    <!-- Formulário de Cadastro -->
     <div class="form-section">
       <div class="form-grid">
-        <input type="text" id="data" placeholder="Data">
-        <input type="text" id="setor" placeholder="Setor">
-        <input type="text" id="solicitante" placeholder="Solicitante">
-        <input type="text" id="equipamento" placeholder="Equipamento">
-        <input type="text" id="motivo" placeholder="Motivo">
-        <input type="text" id="recebido" placeholder="Recebido por">
-        <input type="text" id="nome" placeholder="Nome do executor">
-        <select id="tipo">
-          <option value="">Tipo de Manutenção</option>
-          <option value="Corretiva">Corretiva</option>
-          <option value="Preventiva">Preventiva</option>
-          <option value="Melhoria">Melhoria</option>
-        </select>
-        <input type="text" id="descricao" placeholder="Descrição do serviço">
-        <input type="text" id="material" placeholder="Material utilizado">
-        <input type="text" id="mao" placeholder="Mão de obra">
-        <input type="text" id="tempoPrevisto" placeholder="Tempo previsto (h)">
-        <input type="text" id="tempoUtilizado" placeholder="Tempo utilizado (h)">
-        <input type="text" id="finalizacao" placeholder="Data final">
-        <input type="text" id="assinatura" placeholder="Assinatura">
+        <div class="form-group">
+          <label for="data">Data</label>
+          <input type="text" id="data" placeholder="dd/mm/yyyy">
+        </div>
+        <div class="form-group">
+          <label for="setor">Setor</label>
+          <input type="text" id="setor" placeholder="Setor">
+        </div>
+        <div class="form-group">
+          <label for="solicitante">Solicitante</label>
+          <input type="text" id="solicitante" placeholder="Solicitante">
+        </div>
+        <div class="form-group">
+          <label for="equipamento">Equipamento</label>
+          <input type="text" id="equipamento" placeholder="Equipamento">
+        </div>
+        <div class="form-group">
+          <label for="motivo">Motivo</label>
+          <textarea id="motivo" placeholder="Motivo"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="recebido">Recebido por</label>
+          <input type="text" id="recebido" placeholder="Recebido por">
+        </div>
+        <div class="form-group">
+          <label for="nome">Nome do executor</label>
+          <input type="text" id="nome" placeholder="Nome do executor">
+        </div>
+        <div class="form-group">
+          <label for="tipo">Tipo de Manutenção</label>
+          <select id="tipo">
+            <option value="">Tipo de Manutenção</option>
+            <option value="Corretiva">Corretiva</option>
+            <option value="Preventiva">Preventiva</option>
+            <option value="Melhoria">Melhoria</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="descricao">Descrição do serviço</label>
+          <textarea id="descricao" placeholder="Descrição do serviço"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="material">Material utilizado</label>
+          <textarea id="material" placeholder="Material utilizado"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="mao">Mão de obra</label>
+          <textarea id="mao" placeholder="Mão de obra"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="tempoPrevisto">Tempo previsto (h)</label>
+          <input type="text" id="tempoPrevisto" placeholder="Tempo previsto (h)">
+        </div>
+        <div class="form-group">
+          <label for="tempoUtilizado">Tempo utilizado (h)</label>
+          <input type="text" id="tempoUtilizado" placeholder="Tempo utilizado (h)">
+        </div>
+        <div class="form-group">
+          <label for="finalizacao">Data final</label>
+          <input type="text" id="finalizacao" placeholder="dd/mm/yyyy">
+        </div>
+        <div class="form-group">
+          <label for="assinatura">Assinatura</label>
+          <input type="text" id="assinatura" placeholder="Assinatura">
+        </div>
       </div>
       <div class="button-group">
         <button onclick="adicionarOrdem()">Salvar OS</button>
@@ -75,6 +147,7 @@
       </div>
     </div>
 
+    <!-- Tabela -->
     <div class="table-container">
       <table id="os-table">
         <thead>
@@ -102,14 +175,16 @@
       </table>
     </div>
 
+    <!-- Paginação -->
     <div class="pagination">
       <button onclick="previousPage()">⬅ Anterior</button>
       <span id="page-indicator"></span>
       <button onclick="nextPage()">Próxima ➡</button>
     </div>
 
-    <script defer src="settings/script.js"></script>
+  </div>
 
+  <script defer src="settings/script.js"></script>
 </body>
 
 </html>

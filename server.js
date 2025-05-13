@@ -29,7 +29,9 @@ app.post('/salvar', (req, res) => {
   const sheet = workbook.Sheets['Ordens'];
   const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-  novaOrdem.id = data.length; // próxima linha
+  const ultimosDados = data.slice(1); // remove cabeçalho
+  const ultimoId = ultimosDados.length > 0 ? Math.max(...ultimosDados.map(r => r[0])) : 0;
+  novaOrdem.id = ultimoId + 1;
 
   data.push([
     novaOrdem.id, novaOrdem.data, novaOrdem.setor, novaOrdem.solicitante, novaOrdem.equipamento,
@@ -72,14 +74,14 @@ app.delete('/remover/:id', (req, res) => {
   res.json({ sucesso: true });
 });
 
-// Botão backup
-const path = require('path');
-app.get('/backup', (req, res) => {
-  const filePath = path.join(__dirname, 'database.xlsx');
-  res.download(filePath, 'backup-ordens-servico.xlsx');
+app.listen(3000, () => {
+  console.log('🚀 Servidor rodando em http://localhost:3000');
 });
 
 
-app.listen(3000, () => {
-  console.log('🚀 Servidor rodando em http://localhost:3000');
+const path = require('path');
+
+app.get('/backup', (req, res) => {
+  const filePath = path.join(__dirname, 'database.xlsx');
+  res.download(filePath, 'backup-ordens-servico.xlsx');
 });

@@ -2,6 +2,38 @@ let currentPage = 1;
 const rowsPerPage = 10;
 let allData = [], filteredData = [];
 
+function formatarDataBR(isoString) {
+    if (!isoString || !isoString.includes('-')) return isoString;
+    const [ano, mes, dia] = isoString.split('T')[0].split('-');
+    return `${dia}/${mes}/${ano}`;
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const dataIds = ['data', 'finalizacao', 'filterData', 'filterFinalizacao'];
+    dataIds.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) input.type = 'date';
+    });
+
+    const observer = new MutationObserver(() => {
+        document.querySelectorAll('#os-table tbody tr').forEach(row => {
+            const dataTd = row.cells[1];
+            const finalizacaoTd = row.cells[14];
+            if (dataTd && !dataTd.dataset.formatado) {
+                dataTd.textContent = formatarDataBR(dataTd.textContent);
+                dataTd.dataset.formatado = true;
+            }
+            if (finalizacaoTd && !finalizacaoTd.dataset.formatado) {
+                finalizacaoTd.textContent = formatarDataBR(finalizacaoTd.textContent);
+                finalizacaoTd.dataset.formatado = true;
+            }
+        });
+    });
+
+    observer.observe(document.querySelector('#os-table tbody'), { childList: true, subtree: true });
+
+});
+
 async function fetchData() {
     try {
         const res = await fetch('/listar');
@@ -35,6 +67,7 @@ function renderTable() {
         const actionTd = document.createElement('td');
         const deleteBtn = document.createElement('button');
         deleteBtn.textContent = 'Remover';
+        deleteBtn.className = 'btn-acao-remover'; // Adiciona a classe
         deleteBtn.onclick = () => removerOrdem(row[0]); // ID OS na primeira posição
         actionTd.appendChild(deleteBtn);
         tr.appendChild(actionTd);
@@ -85,17 +118,22 @@ async function adicionarOrdem() {
 }
 
 function applyFilters() {
+    const data = document.getElementById('filterData').value;
     const setor = document.getElementById('filterSetor').value.toLowerCase();
     const tipo = document.getElementById('filterTipo').value.toLowerCase();
     const solicitante = document.getElementById('filterSolicitante').value.toLowerCase();
+
     filteredData = allData.filter(row =>
+        (data === '' || (row[1] && row[1].startsWith(data))) &&
         (setor === '' || (row[2] && row[2].toLowerCase().includes(setor))) &&
         (tipo === '' || (row[8] && row[8].toLowerCase().includes(tipo))) &&
         (solicitante === '' || (row[3] && row[3].toLowerCase().includes(solicitante)))
     );
+
     currentPage = 1;
     renderTable();
 }
+
 
 function clearFilters() {
     document.getElementById('filterSetor').value = '';
