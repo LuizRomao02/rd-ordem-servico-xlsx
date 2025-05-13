@@ -1,87 +1,130 @@
-const express = require('express');
-const fs = require('fs');
-const XLSX = require('xlsx');
-const cors = require('cors');
-const app = express();
+// server.js
 
+const express = require('express');
+const cors = require('cors');
+const { createClient } = require('@supabase/supabase-js');
+const ExcelJS = require('exceljs'); // ✅ <- ADICIONE ESTA LINHA
+
+require('dotenv').config();
+
+const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-const FILE_PATH = './database.xlsx';
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+);
 
-if (!fs.existsSync(FILE_PATH)) {
-  const wb = XLSX.utils.book_new();
-  const ws = XLSX.utils.aoa_to_sheet([[
-    'ID OS', 'Data', 'Setor', 'Solicitante', 'Equipamento',
-    'Motivo', 'Recebido', 'Nome', 'Tipo', 'Descrição',
-    'Material', 'Mão de Obra', 'Tempo Previsto', 'Tempo Utilizado',
-    'Finalização', 'Assinatura'
-  ]]);
-  XLSX.utils.book_append_sheet(wb, ws, 'Ordens');
-  XLSX.writeFile(wb, FILE_PATH);
-}
-
-// Salvar nova ordem
-app.post('/salvar', (req, res) => {
-  const novaOrdem = req.body;
-  const workbook = XLSX.readFile(FILE_PATH);
-  const sheet = workbook.Sheets['Ordens'];
-  const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-  const ultimosDados = data.slice(1); // remove cabeçalho
-  const ultimoId = ultimosDados.length > 0 ? Math.max(...ultimosDados.map(r => r[0])) : 0;
-  novaOrdem.id = ultimoId + 1;
-
-  data.push([
-    novaOrdem.id, novaOrdem.data, novaOrdem.setor, novaOrdem.solicitante, novaOrdem.equipamento,
-    novaOrdem.motivo, novaOrdem.recebido, novaOrdem.nome, novaOrdem.tipo, novaOrdem.descricao,
-    novaOrdem.material, novaOrdem.mao, novaOrdem.tempoPrevisto, novaOrdem.tempoUtilizado,
-    novaOrdem.finalizacao, novaOrdem.assinatura
-  ]);
-
-  const novaPlanilha = XLSX.utils.aoa_to_sheet(data);
-  workbook.Sheets['Ordens'] = novaPlanilha;
-  XLSX.writeFile(workbook, FILE_PATH);
+// Inserir nova ordem
+app.post('/salvar', async (req, res) => {
+  const { error } = await supabase.from('ordens_servico').insert([req.body]);
+  if (error) {
+    console.error(error);
+    return res.status(500).json({ sucesso: false, erro: error.message });
+  }
   res.json({ sucesso: true });
 });
 
-// Listar ordens
-app.get('/listar', (req, res) => {
-  const workbook = XLSX.readFile(FILE_PATH);
-  const sheet = workbook.Sheets['Ordens'];
-  const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-  res.json({ dados: data.slice(1) }); // remove cabeçalho
+// Listar todas as ordens
+app.get('/listar', async (req, res) => {
+  const { data, error } = await supabase
+    .from('ordens_servico')
+    .select('*')
+    .order('id', { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return res.status(500).json({ sucesso: false, erro: error.message });
+  }
+
+  res.json({ dados: data });
 });
 
 // Remover por ID
-app.delete('/remover/:id', (req, res) => {
-  const id = parseInt(req.params.id);
-  const workbook = XLSX.readFile(FILE_PATH);
-  const sheet = workbook.Sheets['Ordens'];
-  const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+app.delete('/remover/:id', async (req, res) => {
+  const { error } = await supabase
+    .from('ordens_servico')
+    .delete()
+    .eq('id', req.params.id);
 
-  const index = data.findIndex((row, i) => i > 0 && row[0] === id);
-  if (index === -1) {
-    return res.status(404).json({ sucesso: false, mensagem: "OS não encontrada." });
+  if (error) {
+    console.error(error);
+    return res.status(500).json({ sucesso: false, erro: error.message });
   }
-
-  data.splice(index, 1); // remove a linha
-  const novaPlanilha = XLSX.utils.aoa_to_sheet(data);
-  workbook.Sheets['Ordens'] = novaPlanilha;
-  XLSX.writeFile(workbook, FILE_PATH);
-
   res.json({ sucesso: true });
 });
 
-app.listen(3000, () => {
-  console.log('🚀 Servidor rodando em http://localhost:3000');
+// Download Backup
+app.get('/exportar', async (req, res) => {
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet('Ordens de Serviço');
+
+  // Cabeçalhos
+  worksheet.columns = [
+    { header: 'ID OS', key: 'id', width: 10 },
+    { header: 'Data', key: 'data', width: 15 },
+    { header: 'Setor', key: 'setor', width: 20 },
+    { header: 'Solicitante', key: 'solicitante', width: 20 },
+    { header: 'Equipamento', key: 'equipamento', width: 20 },
+    { header: 'Motivo', key: 'motivo', width: 25 },
+    { header: 'Recebido', key: 'recebido', width: 20 },
+    { header: 'Nome', key: 'nome', width: 20 },
+    { header: 'Tipo', key: 'tipo', width: 15 },
+    { header: 'Descrição', key: 'descricao', width: 30 },
+    { header: 'Material', key: 'material', width: 25 },
+    { header: 'Mão de Obra', key: 'mao', width: 20 },
+    { header: 'Tempo Previsto', key: 'tempo_previsto', width: 18 },
+    { header: 'Tempo Utilizado', key: 'tempo_utilizado', width: 18 },
+    { header: 'Finalização', key: 'finalizacao', width: 15 },
+    { header: 'Assinatura', key: 'assinatura', width: 20 },
+  ];
+
+  // Estilo do cabeçalho
+  worksheet.getRow(1).eachCell(cell => {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FF388E3C' }
+    };
+    cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.alignment = { vertical: 'middle', horizontal: 'center' };
+  });
+
+  // 🔄 Buscar dados do Supabase
+  const { data, error } = await supabase
+    .from('ordens_servico')
+    .select('*')
+    .order('id', { ascending: true });
+
+  if (error) {
+    console.error(error);
+    return res.status(500).json({ sucesso: false, erro: error.message });
+  }
+
+  // Adicionar linhas
+  data.forEach(row => worksheet.addRow(row));
+
+  worksheet.autoFilter = {
+    from: 'A1',
+    to: 'P1'
+  };
+
+  worksheet.eachRow({ includeEmpty: false }, row => {
+    row.height = 20;
+  });
+
+  res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+  res.setHeader('Content-Disposition', 'attachment; filename="ordens-servico-formatado.xlsx"');
+
+  await workbook.xlsx.write(res);
+  res.end();
 });
 
-
-const path = require('path');
-
-app.get('/backup', (req, res) => {
-  const filePath = path.join(__dirname, 'database.xlsx');
-  res.download(filePath, 'backup-ordens-servico.xlsx');
+// Rodar servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });
+

@@ -35,49 +35,58 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function fetchData() {
-    try {
-        const res = await fetch('/listar');
-        const json = await res.json();
-        allData = json.dados || [];
-        filteredData = allData;
-        renderTable();
-    } catch (e) {
-        alert('Erro ao carregar dados da base.');
-        console.error(e);
-    }
+  try {
+    const res = await fetch('/listar');
+    const json = await res.json();
+    allData = json.dados || [];
+    filteredData = allData;
+    renderTable();
+  } catch (e) {
+    alert('Erro ao carregar dados da base.');
+    console.error(e);
+  }
 }
+
 
 function renderTable() {
-    const tableBody = document.querySelector('#os-table tbody');
-    tableBody.innerHTML = '';
-    const start = (currentPage - 1) * rowsPerPage;
-    const end = start + rowsPerPage;
-    const pageData = filteredData.slice(start, end);
+  const tableBody = document.querySelector('#os-table tbody');
+  tableBody.innerHTML = '';
+  const start = (currentPage - 1) * rowsPerPage;
+  const end = start + rowsPerPage;
+  const pageData = filteredData.slice(start, end);
 
-    pageData.forEach(row => {
-        const tr = document.createElement('tr');
+  pageData.forEach(row => {
+    const tr = document.createElement('tr');
 
-        row.forEach(cell => {
-            const td = document.createElement('td');
-            td.textContent = cell;
-            tr.appendChild(td);
-        });
+    const campos = [
+      'id', 'data', 'setor', 'solicitante', 'equipamento',
+      'motivo', 'recebido', 'nome', 'tipo', 'descricao',
+      'material', 'mao', 'tempo_previsto', 'tempo_utilizado',
+      'finalizacao', 'assinatura'
+    ];
 
-        // Adiciona botão de remover
-        const actionTd = document.createElement('td');
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'Remover';
-        deleteBtn.className = 'btn-acao-remover'; // Adiciona a classe
-        deleteBtn.onclick = () => removerOrdem(row[0]); // ID OS na primeira posição
-        actionTd.appendChild(deleteBtn);
-        tr.appendChild(actionTd);
-
-        tableBody.appendChild(tr);
+    campos.forEach(campo => {
+      const td = document.createElement('td');
+      td.textContent = row[campo] || '';
+      tr.appendChild(td);
     });
 
-    document.getElementById('page-indicator').textContent =
-        `Página ${currentPage} de ${Math.ceil(filteredData.length / rowsPerPage)}`;
+    // Botão de ação (remover)
+    const tdAcoes = document.createElement('td');
+    const btnRemover = document.createElement('button');
+    btnRemover.textContent = 'Remover';
+    btnRemover.className = 'btn-acao-remover';
+    btnRemover.onclick = () => removerOrdem(row.id);
+    tdAcoes.appendChild(btnRemover);
+    tr.appendChild(tdAcoes);
+
+    tableBody.appendChild(tr);
+  });
+
+  document.getElementById('page-indicator').textContent =
+    `Página ${currentPage} de ${Math.ceil(filteredData.length / rowsPerPage)}`;
 }
+
 
 function previousPage() {
     if (currentPage > 1) {
@@ -94,7 +103,7 @@ function nextPage() {
 }
 
 async function adicionarOrdem() {
-    const campos = ['data', 'setor', 'solicitante', 'equipamento', 'motivo', 'recebido', 'nome', 'tipo', 'descricao', 'material', 'mao', 'tempoPrevisto', 'tempoUtilizado', 'finalizacao', 'assinatura'];
+    const campos = ['data', 'setor', 'solicitante', 'equipamento', 'motivo', 'recebido', 'nome', 'tipo', 'descricao', 'material', 'mao', 'tempo_previsto', 'tempo_utilizado', 'finalizacao', 'assinatura'];
     const ordem = {};
     campos.forEach(id => ordem[id] = document.getElementById(id).value);
     if (Object.values(ordem).some(v => !v)) return alert('Preencha todos os campos.');

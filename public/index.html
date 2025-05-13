@@ -126,11 +126,11 @@
         </div>
         <div class="form-group">
           <label for="tempoPrevisto">Tempo previsto (h)</label>
-          <input type="text" id="tempoPrevisto" placeholder="Tempo previsto (h)">
+          <input type="text" id="tempo_previsto" placeholder="Tempo previsto (h)">
         </div>
         <div class="form-group">
           <label for="tempoUtilizado">Tempo utilizado (h)</label>
-          <input type="text" id="tempoUtilizado" placeholder="Tempo utilizado (h)">
+          <input type="text" id="tempo_utilizado" placeholder="Tempo utilizado (h)">
         </div>
         <div class="form-group">
           <label for="finalizacao">Data final</label>
@@ -143,7 +143,7 @@
       </div>
       <div class="button-group">
         <button onclick="adicionarOrdem()">Salvar OS</button>
-        <button onclick="fazerBackup()">📥 Baixar Backup Excel</button>
+        <button onclick="window.location.href='/exportar'">📥 Exportar Excel Formatado</button>
       </div>
     </div>
 
