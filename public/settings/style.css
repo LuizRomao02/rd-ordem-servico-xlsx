@@ -124,6 +124,18 @@ h1 {
   transform: scale(1.05);
 }
 
+.btn-acao-imprimir {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-acao-imprimir:hover {
+  background-color: #2980b9;
+}
 
 .table-container {
   background: #fff;

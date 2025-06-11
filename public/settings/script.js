@@ -1,5 +1,6 @@
 let currentPage = 1;
-const rowsPerPage = 10;
+const rowsPerPage = 20;
+const senhaRemocao = '!@#321!';
 let allData = [], filteredData = [];
 
 function formatarDataBR(isoString) {
@@ -154,7 +155,15 @@ function clearFilters() {
 }
 
 function removerOrdem(id) {
-    if (!confirm(`Deseja remover a OS de ID ${id}?`)) return;
+    const senha = prompt("Digite a senha para remover esta OS:");
+
+    if (senha === null) return; // Usuário cancelou
+    if (senha !== senhaRemocao) {
+        alert("Senha incorreta. A OS não será removida.");
+        return;
+    }
+
+    if (!confirm(`Deseja realmente remover a OS de ID ${id}?`)) return;
 
     fetch(`/remover/${id}`, { method: 'DELETE' })
         .then(res => res.json())
@@ -172,9 +181,162 @@ function removerOrdem(id) {
         });
 }
 
+
 function fazerBackup() {
   window.location.href = '/backup';
 }
 
+function imprimirOrdem(row) {
+    const campos = [
+        "ID OS", "Data", "Setor", "Solicitante", "Equipamento", "Motivo", "Recebido por",
+        "Nome do Executor", "Tipo de Manutenção", "Descrição do Serviço", "Material Utilizado",
+        "Mão de Obra", "Tempo Previsto", "Tempo Utilizado", "Data Final", "Assinatura"
+    ];
+
+    let conteudo = `
+    <html>
+    <head>
+      <title>Impressão da Ordem de Serviço</title>
+      <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 40px;
+            background-color: #ffffff;
+            color: #2c3e50;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            max-width: 140px;
+        }
+
+        .titulo {
+            text-align: center;
+            font-size: 26px;
+            font-weight: bold;
+            margin-top: 10px;
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            font-size: 15px;
+            table-layout: fixed; /* 🚨 Adicionado para forçar quebra de texto */
+            word-wrap: break-word; /* Garante quebra dentro das células */
+        }
+
+        th, td {
+            padding: 10px 12px;
+            border: 1px solid #ccc;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: 600;
+            width: 30%;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f7f9fc;
+        }
+
+        td {
+            white-space: pre-wrap; /* ✅ Quebra linhas e preserva \n ou espaços */
+            word-break: break-word; /* ✅ Evita overflow horizontal */
+        }
+
+        .assinatura {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .assinatura div {
+            width: 45%;
+            text-align: center;
+        }
+
+        .assinatura hr {
+            margin-top: 40px;
+            border: none;
+            border-top: 1px solid #999;
+        }
+
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact !important; /* Safari/Chrome */
+                print-color-adjust: exact !important;         /* Firefox/Edge */
+            }
+
+            th {
+                background-color: #2c3e50 !important;
+                color: white !important;
+            }
+
+            tr:nth-child(even) td {
+                background-color: #f7f9fc !important;
+            }
+
+            td {
+                background-color: white !important;
+                color: #2c3e50 !important;
+            }
+        }
+
+        </style>
+    </head>
+    <body>
+      <div class="logo">
+        <img src="settings/Logo.png" alt="Logo da Empresa">
+      </div>
+      <h2>Ordem de Serviço - RD</h2>
+      <table>
+        <tbody>
+          ${campos.map((campo, i) => `
+            <tr>
+              <th>${campo}</th>
+              <td>${formatarDataBRIfNeeded(i, row[i])}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </body>
+    </html>
+    `;
+
+    const janela = window.open('', '_blank');
+    janela.document.write(conteudo);
+    janela.document.close();
+
+    janela.onload = function () {
+    const logo = janela.document.querySelector("img");
+    if (logo && !logo.complete) {
+        logo.onload = () => janela.print();
+    } else {
+        janela.print();
+    }
+    };
+
+}
+
+function formatarDataBRIfNeeded(index, valor) {
+    // Campos 1 (data) e 14 (finalizacao) precisam de formatação
+    if (index === 1 || index === 14) {
+        return formatarDataBR(valor);
+    }
+    return valor;
+}
 
 fetchData();
