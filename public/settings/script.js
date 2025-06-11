@@ -72,15 +72,25 @@ function renderTable() {
       tr.appendChild(td);
     });
 
-    // Botão de ação (remover)
+    // Ações
     const tdAcoes = document.createElement('td');
+
+    // Botão Remover
     const btnRemover = document.createElement('button');
     btnRemover.textContent = 'Remover';
     btnRemover.className = 'btn-acao-remover';
     btnRemover.onclick = () => removerOrdem(row.id);
     tdAcoes.appendChild(btnRemover);
-    tr.appendChild(tdAcoes);
 
+    // Botão Imprimir
+    const printBtn = document.createElement('button');
+    printBtn.textContent = '🖨 Imprimir';
+    printBtn.className = 'btn-acao-imprimir';
+    printBtn.style.marginLeft = '5px';
+    printBtn.onclick = () => imprimirOrdem(row);
+    tdAcoes.appendChild(printBtn);
+
+    tr.appendChild(tdAcoes);
     tableBody.appendChild(tr);
   });
 
