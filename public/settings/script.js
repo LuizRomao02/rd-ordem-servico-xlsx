@@ -1,6 +1,5 @@
 let currentPage = 1;
 const rowsPerPage = 20;
-const senhaRemocao = '!@#321!';
 let allData = [], filteredData = [];
 
 function formatarDataBR(isoString) {
@@ -167,186 +166,205 @@ function clearFilters() {
 function removerOrdem(id) {
     const senha = prompt("Digite a senha para remover esta OS:");
 
-    if (senha === null) return; // Usuário cancelou
-    if (senha !== senhaRemocao) {
-        alert("Senha incorreta. A OS não será removida.");
-        return;
-    }
+    if (senha === null) return;
 
-    if (!confirm(`Deseja realmente remover a OS de ID ${id}?`)) return;
-
-    fetch(`/remover/${id}`, { method: 'DELETE' })
-        .then(res => res.json())
-        .then(res => {
-            if (res.sucesso) {
-                alert('OS removida com sucesso!');
-                fetchData();
-            } else {
-                alert('Erro ao remover OS.');
-            }
-        })
-        .catch(err => {
-            console.error(err);
-            alert('Erro de conexão com o servidor.');
-        });
+    fetch(`/remover/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'x-btn-password': senha
+        }
+    })
+    .then(res => res.json())
+    .then(res => {
+        if (res.sucesso) {
+            alert('OS removida com sucesso!');
+            fetchData();
+        } else {
+            alert(res.mensagem || 'Erro ao remover OS.');
+        }
+    })
+    .catch(err => {
+        console.error(err);
+        alert('Erro de conexão com o servidor.');
+    });
 }
-
 
 function fazerBackup() {
   window.location.href = '/backup';
 }
 
 function imprimirOrdem(row) {
-    const campos = [
-        "ID OS", "Data", "Setor", "Solicitante", "Equipamento", "Motivo", "Recebido por",
-        "Nome do Executor", "Tipo de Manutenção", "Descrição do Serviço", "Material Utilizado",
-        "Mão de Obra", "Tempo Previsto", "Tempo Utilizado", "Data Final", "Assinatura"
-    ];
+  const campos = [
+    "ID OS", "Data", "Setor", "Solicitante", "Equipamento", "Motivo", "Recebido por",
+    "Nome do Executor", "Tipo de Manutenção", "Descrição do Serviço", "Material Utilizado",
+    "Mão de Obra", "Tempo Previsto", "Tempo Utilizado", "Data Final", "Assinatura"
+  ];
 
-    let conteudo = `
-    <html>
-    <head>
-      <title>Impressão da Ordem de Serviço</title>
-      <style>
-        * {
-            box-sizing: border-box;
-        }
+  const chaves = [
+    "id", "data", "setor", "solicitante", "equipamento", "motivo", "recebido",
+    "nome", "tipo", "descricao", "material", "mao", "tempo_previsto",
+    "tempo_utilizado", "finalizacao", "assinatura"
+  ];
 
+  const conteudo = `
+  <html>
+  <head>
+    <title>Impressão da Ordem de Serviço</title>
+    <style>
+      * { box-sizing: border-box; }
+
+      body {
+        font-family: 'Segoe UI', sans-serif;
+        margin: 40px;
+        background-color: #ffffff;
+        color: #2c3e50;
+      }
+
+      .logo {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      .logo img {
+        max-width: 140px;
+      }
+
+      .titulo {
+        text-align: center;
+        font-size: 26px;
+        font-weight: bold;
+        margin-top: 10px;
+        color: #2c3e50;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 30px;
+        font-size: 15px;
+        table-layout: fixed;
+        word-wrap: break-word;
+      }
+
+      th, td {
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      th {
+        background-color: #2c3e50;
+        color: white;
+        font-weight: 600;
+        width: 30%;
+      }
+
+      tr:nth-child(even) td {
+        background-color: #f7f9fc;
+      }
+
+      td {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .assinatura {
+        margin-top: 50px;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .assinatura div {
+        width: 45%;
+        text-align: center;
+      }
+
+      .assinatura hr {
+        margin-top: 40px;
+        border: none;
+        border-top: 1px solid #999;
+      }
+
+      @media print {
         body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 40px;
-            background-color: #ffffff;
-            color: #2c3e50;
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .logo img {
-            max-width: 140px;
-        }
-
-        .titulo {
-            text-align: center;
-            font-size: 26px;
-            font-weight: bold;
-            margin-top: 10px;
-            color: #2c3e50;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 30px;
-            font-size: 15px;
-            table-layout: fixed; /* 🚨 Adicionado para forçar quebra de texto */
-            word-wrap: break-word; /* Garante quebra dentro das células */
-        }
-
-        th, td {
-            padding: 10px 12px;
-            border: 1px solid #ccc;
-            text-align: left;
-            vertical-align: top;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
 
         th {
-            background-color: #2c3e50;
-            color: white;
-            font-weight: 600;
-            width: 30%;
+          background-color: #2c3e50 !important;
+          color: white !important;
         }
 
         tr:nth-child(even) td {
-            background-color: #f7f9fc;
+          background-color: #f7f9fc !important;
         }
 
         td {
-            white-space: pre-wrap; /* ✅ Quebra linhas e preserva \n ou espaços */
-            word-break: break-word; /* ✅ Evita overflow horizontal */
+          background-color: white !important;
+          color: #2c3e50 !important;
         }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="logo">
+      <img src="settings/Logo.png" alt="Logo da Empresa">
+    </div>
+    <div class="titulo">Ordem de Serviço - RD</div>
+    <table>
+      <tbody>
+        ${campos.map((label, i) => `
+          <tr>
+            <th>${label}</th>
+            <td>${formatarDataBRIfNeeded(chaves[i], row[chaves[i]]) || ''}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
 
-        .assinatura {
-            margin-top: 50px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .assinatura div {
-            width: 45%;
-            text-align: center;
-        }
-
-        .assinatura hr {
-            margin-top: 40px;
-            border: none;
-            border-top: 1px solid #999;
-        }
-
-        @media print {
-            body {
-                -webkit-print-color-adjust: exact !important; /* Safari/Chrome */
-                print-color-adjust: exact !important;         /* Firefox/Edge */
-            }
-
-            th {
-                background-color: #2c3e50 !important;
-                color: white !important;
-            }
-
-            tr:nth-child(even) td {
-                background-color: #f7f9fc !important;
-            }
-
-            td {
-                background-color: white !important;
-                color: #2c3e50 !important;
-            }
-        }
-
-        </style>
-    </head>
-    <body>
-      <div class="logo">
-        <img src="settings/Logo.png" alt="Logo da Empresa">
+    <div class="assinatura">
+      <div>
+        <hr>
+        <p>Responsável Técnico</p>
       </div>
-      <h2>Ordem de Serviço - RD</h2>
-      <table>
-        <tbody>
-          ${campos.map((campo, i) => `
-            <tr>
-              <th>${campo}</th>
-              <td>${formatarDataBRIfNeeded(i, row[i])}</td>
-            </tr>`).join('')}
-        </tbody>
-      </table>
-    </body>
-    </html>
-    `;
+      <div>
+        <hr>
+        <p>Solicitante</p>
+      </div>
+    </div>
+  </body>
+  </html>
+  `;
 
-    const janela = window.open('', '_blank');
-    janela.document.write(conteudo);
-    janela.document.close();
+  const janela = window.open('', '_blank');
+  janela.document.write(conteudo);
+  janela.document.close();
 
-    janela.onload = function () {
+  janela.onload = function () {
     const logo = janela.document.querySelector("img");
     if (logo && !logo.complete) {
-        logo.onload = () => janela.print();
+      logo.onload = () => janela.print();
     } else {
-        janela.print();
+      janela.print();
     }
-    };
-
+  };
 }
 
-function formatarDataBRIfNeeded(index, valor) {
-    // Campos 1 (data) e 14 (finalizacao) precisam de formatação
-    if (index === 1 || index === 14) {
-        return formatarDataBR(valor);
-    }
-    return valor;
+function formatarDataBRIfNeeded(campo, valor) {
+  if (!valor) return '';
+  if (campo === 'data' || campo === 'finalizacao') {
+    return formatarDataBR(valor);
+  }
+  return valor;
 }
+
+function formatarDataBR(isoString) {
+  if (!isoString || !isoString.includes('-')) return isoString;
+  const [ano, mes, dia] = isoString.split('T')[0].split('-');
+  return `${dia}/${mes}/${ano}`;
+}
+
 
 fetchData();

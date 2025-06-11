@@ -44,6 +44,13 @@ app.get('/listar', async (req, res) => {
 
 // Remover por ID
 app.delete('/remover/:id', async (req, res) => {
+  const senha = req.headers['x-btn-password'];
+  const senhaCorreta = process.env.BTN_PASSWORD;
+
+  if (senha !== senhaCorreta) {
+    return res.status(401).json({ sucesso: false, mensagem: 'Senha incorreta.' });
+  }
+
   const { error } = await supabase
     .from('ordens_servico')
     .delete()
@@ -53,8 +60,10 @@ app.delete('/remover/:id', async (req, res) => {
     console.error(error);
     return res.status(500).json({ sucesso: false, erro: error.message });
   }
+
   res.json({ sucesso: true });
 });
+
 
 // Download Backup
 app.get('/exportar', async (req, res) => {
