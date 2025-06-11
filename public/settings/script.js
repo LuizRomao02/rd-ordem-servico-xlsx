@@ -212,13 +212,11 @@ function imprimirOrdem(row) {
   <head>
     <title>Impressão da Ordem de Serviço</title>
     <style>
-      * { box-sizing: border-box; }
-
       body {
         font-family: 'Segoe UI', sans-serif;
         margin: 40px;
         background-color: #ffffff;
-        color: #2c3e50;
+        color: #1b1b1b;
       }
 
       .logo {
@@ -235,7 +233,7 @@ function imprimirOrdem(row) {
         font-size: 26px;
         font-weight: bold;
         margin-top: 10px;
-        color: #2c3e50;
+        color: #2e7d32;
       }
 
       table {
@@ -247,7 +245,8 @@ function imprimirOrdem(row) {
         word-wrap: break-word;
       }
 
-      th, td {
+      th,
+      td {
         padding: 10px 12px;
         border: 1px solid #ccc;
         text-align: left;
@@ -255,19 +254,21 @@ function imprimirOrdem(row) {
       }
 
       th {
-        background-color: #2c3e50;
-        color: white;
-        font-weight: 600;
+        background-color: #2e7d32;
+        color: #ffffff;
+        font-weight: bold;
         width: 30%;
       }
 
-      tr:nth-child(even) td {
-        background-color: #f7f9fc;
-      }
-
       td {
+        background-color: #ffffff;
+        color: #000000;
         white-space: pre-wrap;
         word-break: break-word;
+      }
+
+      tr:nth-child(even) td {
+        background-color: #f1f8e9;
       }
 
       .assinatura {
@@ -294,20 +295,22 @@ function imprimirOrdem(row) {
         }
 
         th {
-          background-color: #2c3e50 !important;
-          color: white !important;
-        }
-
-        tr:nth-child(even) td {
-          background-color: #f7f9fc !important;
+          background-color: #2e7d32 !important;
+          color: #ffffff !important;
+          font-weight: bold !important;
         }
 
         td {
-          background-color: white !important;
-          color: #2c3e50 !important;
+          background-color: #ffffff !important;
+          color: #000000 !important;
+        }
+
+        tr:nth-child(even) td {
+          background-color: #f1f8e9 !important;
         }
       }
     </style>
+
   </head>
   <body>
     <div class="logo">
