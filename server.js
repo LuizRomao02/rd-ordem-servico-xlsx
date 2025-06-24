@@ -27,6 +27,43 @@ app.post('/salvar', async (req, res) => {
   res.json({ sucesso: true });
 });
 
+app.patch('/atualizar-pendencia/:id', async (req, res) => {
+  const senha = req.headers['x-btn-password'];
+  const senhaCorreta = process.env.BTN_PASSWORD;
+
+  if (senha !== senhaCorreta) {
+    return res.status(401).json({ sucesso: false, mensagem: 'Senha incorreta.' });
+  }
+
+  const { pendencia } = req.body;
+
+  const { data, error: selectError } = await supabase
+    .from('ordens_servico')
+    .select('pendencia')
+    .eq('id', req.params.id)
+    .single();
+
+  if (selectError) {
+    console.error(selectError);
+    return res.status(500).json({ sucesso: false, mensagem: 'Erro ao buscar OS.' });
+  }
+
+  const pendenciasAnteriores = data?.pendencia ? `${data.pendencia}; ` : '';
+  const novaPendencia = pendenciasAnteriores + pendencia;
+
+  const { error: updateError } = await supabase
+    .from('ordens_servico')
+    .update({ pendencia: novaPendencia })
+    .eq('id', req.params.id);
+
+  if (updateError) {
+    console.error(updateError);
+    return res.status(500).json({ sucesso: false, mensagem: 'Erro ao atualizar pendência.' });
+  }
+
+  res.json({ sucesso: true });
+});
+
 // Listar todas as ordens
 app.get('/listar', async (req, res) => {
   const { data, error } = await supabase

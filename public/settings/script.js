@@ -89,12 +89,50 @@ function renderTable() {
     printBtn.onclick = () => imprimirOrdem(row);
     tdAcoes.appendChild(printBtn);
 
+    // Botão Adicionar Pendência
+    const btnPendencia = document.createElement('button');
+    btnPendencia.textContent = '➕ Pendência';
+    btnPendencia.className = 'btn-acao-pendencia';
+    btnPendencia.style.marginLeft = '5px';
+    btnPendencia.onclick = () => adicionarPendencia(row.id);
+    tdAcoes.appendChild(btnPendencia);
+
     tr.appendChild(tdAcoes);
     tableBody.appendChild(tr);
   });
 
   document.getElementById('page-indicator').textContent =
     `Página ${currentPage} de ${Math.ceil(filteredData.length / rowsPerPage)}`;
+}
+
+function adicionarPendencia(id) {
+  const novaPendencia = prompt('Digite a nova pendência:');
+  if (!novaPendencia) return;
+
+  const senha = prompt('Digite a senha para confirmar:');
+  if (!senha) return;
+
+  fetch(`/atualizar-pendencia/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-btn-password': senha
+    },
+    body: JSON.stringify({ pendencia: novaPendencia })
+  })
+  .then(res => res.json())
+  .then(res => {
+    if (res.sucesso) {
+      alert('Pendência atualizada com sucesso!');
+      fetchData();
+    } else {
+      alert(res.mensagem || 'Erro ao atualizar pendência.');
+    }
+  })
+  .catch(err => {
+    console.error(err);
+    alert('Erro ao conectar com o servidor.');
+  });
 }
 
 
@@ -198,13 +236,13 @@ function imprimirOrdem(row) {
   const campos = [
     "ID OS", "Data", "Setor", "Solicitante", "Equipamento", "Motivo", "Recebido por",
     "Nome do Executor", "Tipo de Manutenção", "Descrição do Serviço", "Material Utilizado",
-    "Mão de Obra", "Tempo Previsto", "Tempo Utilizado", "Data Final", "Assinatura"
+    "Mão de Obra", "Tempo Previsto", "Tempo Utilizado", "Data Final", "Pendência", "Assinatura"
   ];
 
   const chaves = [
     "id", "data", "setor", "solicitante", "equipamento", "motivo", "recebido",
     "nome", "tipo", "descricao", "material", "mao", "tempo_previsto",
-    "tempo_utilizado", "finalizacao", "assinatura"
+    "tempo_utilizado", "finalizacao", "pendencia", "assinatura"
   ];
 
   const conteudo = `
