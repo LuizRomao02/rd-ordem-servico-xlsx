@@ -37,23 +37,9 @@ app.patch('/atualizar-pendencia/:id', async (req, res) => {
 
   const { pendencia } = req.body;
 
-  const { data, error: selectError } = await supabase
-    .from('ordens_servico')
-    .select('pendencia')
-    .eq('id', req.params.id)
-    .single();
-
-  if (selectError) {
-    console.error(selectError);
-    return res.status(500).json({ sucesso: false, mensagem: 'Erro ao buscar OS.' });
-  }
-
-  const pendenciasAnteriores = data?.pendencia ? `${data.pendencia}; ` : '';
-  const novaPendencia = pendenciasAnteriores + pendencia;
-
   const { error: updateError } = await supabase
     .from('ordens_servico')
-    .update({ pendencia: novaPendencia })
+    .update({ pendencia })
     .eq('id', req.params.id);
 
   if (updateError) {
