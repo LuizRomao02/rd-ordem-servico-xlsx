@@ -113,7 +113,7 @@ function nextPage() {
 }
 
 async function adicionarOrdem() {
-    const campos = ['data', 'setor', 'solicitante', 'equipamento', 'motivo', 'recebido', 'nome', 'tipo', 'descricao', 'material', 'mao', 'tempo_previsto', 'tempo_utilizado', 'finalizacao', 'assinatura'];
+    const campos = ['data', 'setor', 'solicitante', 'equipamento', 'motivo', 'recebido', 'nome', 'tipo', 'descricao', 'material', 'mao', 'tempo_previsto', 'tempo_utilizado', 'finalizacao', 'assinatura', 'pendencia'];
     const ordem = {};
     campos.forEach(id => ordem[id] = document.getElementById(id).value);
     if (Object.values(ordem).some(v => !v)) return alert('Preencha todos os campos.');
