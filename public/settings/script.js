@@ -62,7 +62,7 @@ function renderTable() {
       'id', 'data', 'setor', 'solicitante', 'equipamento',
       'motivo', 'recebido', 'nome', 'tipo', 'descricao',
       'material', 'mao', 'tempo_previsto', 'tempo_utilizado',
-      'finalizacao', 'assinatura'
+      'finalizacao', 'pendencia', 'assinatura'
     ];
 
     campos.forEach(campo => {

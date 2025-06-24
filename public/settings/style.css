@@ -123,6 +123,21 @@ h1 {
   background-color: #c62828;
   transform: scale(1.05);
 }
+.btn-acao-pendencia {
+  background-color: #f9a825; /* Amarelo escuro */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  font-size: 13px;
+}
+
+.btn-acao-pendencia:hover {
+  background-color: #f57f17; /* Tom mais escuro no hover */
+  transform: scale(1.05);
+}
 
 .btn-acao-imprimir {
   background-color: #3498db;
