@@ -74,12 +74,13 @@ function renderTable() {
     // Ações
     const tdAcoes = document.createElement('td');
 
-    // Botão Remover
-    const btnRemover = document.createElement('button');
-    btnRemover.textContent = 'Remover';
-    btnRemover.className = 'btn-acao-remover';
-    btnRemover.onclick = () => removerOrdem(row.id);
-    tdAcoes.appendChild(btnRemover);
+    // Botão Adicionar Pendência
+    const btnPendencia = document.createElement('button');
+    btnPendencia.textContent = '➕ Pendência';
+    btnPendencia.className = 'btn-acao-pendencia';
+    btnPendencia.style.marginLeft = '5px';
+    btnPendencia.onclick = () => adicionarPendencia(row.id);
+    tdAcoes.appendChild(btnPendencia);
 
     // Botão Imprimir
     const printBtn = document.createElement('button');
@@ -89,13 +90,12 @@ function renderTable() {
     printBtn.onclick = () => imprimirOrdem(row);
     tdAcoes.appendChild(printBtn);
 
-    // Botão Adicionar Pendência
-    const btnPendencia = document.createElement('button');
-    btnPendencia.textContent = '➕ Pendência';
-    btnPendencia.className = 'btn-acao-pendencia';
-    btnPendencia.style.marginLeft = '5px';
-    btnPendencia.onclick = () => adicionarPendencia(row.id);
-    tdAcoes.appendChild(btnPendencia);
+    // Botão Remover
+    const btnRemover = document.createElement('button');
+    btnRemover.textContent = 'Remover';
+    btnRemover.className = 'btn-acao-remover';
+    btnRemover.onclick = () => removerOrdem(row.id);
+    tdAcoes.appendChild(btnRemover);
 
     tr.appendChild(tdAcoes);
     tableBody.appendChild(tr);
@@ -172,33 +172,6 @@ async function adicionarOrdem() {
         alert('Erro ao salvar OS.');
         console.error(e);
     }
-}
-
-function applyFilters() {
-    const data = document.getElementById('filterData').value;
-    const setor = document.getElementById('filterSetor').value.toLowerCase();
-    const tipo = document.getElementById('filterTipo').value.toLowerCase();
-    const solicitante = document.getElementById('filterSolicitante').value.toLowerCase();
-
-    filteredData = allData.filter(row =>
-        (data === '' || (row[1] && row[1].startsWith(data))) &&
-        (setor === '' || (row[2] && row[2].toLowerCase().includes(setor))) &&
-        (tipo === '' || (row[8] && row[8].toLowerCase().includes(tipo))) &&
-        (solicitante === '' || (row[3] && row[3].toLowerCase().includes(solicitante)))
-    );
-
-    currentPage = 1;
-    renderTable();
-}
-
-
-function clearFilters() {
-    document.getElementById('filterSetor').value = '';
-    document.getElementById('filterTipo').value = '';
-    document.getElementById('filterSolicitante').value = '';
-    filteredData = allData;
-    currentPage = 1;
-    renderTable();
 }
 
 function removerOrdem(id) {

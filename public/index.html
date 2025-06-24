@@ -23,55 +23,7 @@
     <h1>CONTROLE DE ORDENS DE SERVIÇO</h1>
   </header>
 
-  <div class="container">
-
-    <!-- Filtros -->
-    <div class="filter-section">
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="filterData">Filtrar por Data</label>
-          <input type="text" id="filterData" placeholder="dd/mm/yyyy">
-        </div>
-        <div class="form-group">
-          <label for="filterSetor">Filtrar por Setor</label>
-          <input type="text" id="filterSetor" placeholder="Filtrar por Setor">
-        </div>
-        <div class="form-group">
-          <label for="filterSolicitante">Filtrar por Solicitante</label>
-          <input type="text" id="filterSolicitante" placeholder="Filtrar por Solicitante">
-        </div>
-        <div class="form-group">
-          <label for="filterEquipamento">Filtrar por Equipamento</label>
-          <input type="text" id="filterEquipamento" placeholder="Filtrar por Equipamento">
-        </div>
-        <div class="form-group">
-          <label for="filterNome">Filtrar por Nome</label>
-          <input type="text" id="filterNome" placeholder="Filtrar por Nome">
-        </div>
-        <div class="form-group">
-          <label for="filterTipo">Filtrar por Tipo</label>
-          <select id="filterTipo">
-            <option value="">Todos</option>
-            <option value="Corretiva">Corretiva</option>
-            <option value="Preventiva">Preventiva</option>
-            <option value="Melhoria">Melhoria</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="filterTempoPrevisto">Filtrar por Tempo Previsto</label>
-          <input type="text" id="filterTempoPrevisto" placeholder="Filtrar por Tempo Previsto">
-        </div>
-        <div class="form-group">
-          <label for="filterFinalizacao">Filtrar por Finalização</label>
-          <input type="text" id="filterFinalizacao" placeholder="dd/mm/yyyy">
-        </div>
-      </div>
-      <div class="button-group">
-        <button onclick="applyFilters()">Filtrar</button>
-        <button onclick="clearFilters()">Limpar</button>
-      </div>
-    </div>
-
+  <div class="container"> 
     <!-- Formulário de Cadastro -->
     <div class="form-section">
       <div class="form-grid">
@@ -137,12 +89,12 @@
           <input type="text" id="finalizacao" placeholder="dd/mm/yyyy">
         </div>
         <div class="form-group">
-          <label for="assinatura">Assinatura</label>
-          <input type="text" id="assinatura" placeholder="Assinatura">
-        </div>
-         <div class="form-group">
           <label for="pendencia">Pendência</label>
           <input type="text" id="pendencia" placeholder="Pendência">
+        </div>
+        <div class="form-group">
+          <label for="assinatura">Assinatura</label>
+          <input type="text" id="assinatura" placeholder="Assinatura">
         </div>
       </div>
       <div class="button-group">
@@ -171,8 +123,8 @@
             <th>Tempo Previsto</th>
             <th>Tempo Utilizado</th>
             <th>Finalização</th>
-            <th>Assinatura</th>
             <th>Pendência</th>
+            <th>Assinatura</th>
             <th>Ações</th>
           </tr>
         </thead>
